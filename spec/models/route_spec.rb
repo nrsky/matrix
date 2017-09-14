@@ -18,8 +18,13 @@ RSpec.describe Route, type: :model do
 
   describe 'saves the model' do
     it 'saves the document' do
-      route = Route.new(id: 1, passphrase: 'Kans4s-i$-g01ng-by3-bye', source: '', start_node: 'alpha', end_node: 'beta',
-      start_time: DateTime.now, end_time: DateTime.now + 5)
+      route = Route.new(id: 1,
+                        passphrase: 'Kans4s-i$-g01ng-by3-bye',
+                        source: 'sentinels',
+                        start_node: 'alpha',
+                        end_node: 'beta',
+                        start_time: DateTime.now,
+                        end_time: DateTime.now + 5)
       expect(route.save!).to be_truthy
     end
   end
