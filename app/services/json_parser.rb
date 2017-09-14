@@ -2,19 +2,19 @@ module Json_Parser
   def self.parse_json(file)
     data = JSON.parse File.new(file).read
     results = []
+    key = data.keys.first
 
-    if data.key?('routes')
-      data['routes'].each do |route|
-        Route.create(route)
-        results << route
+      data[key].each do |route|
+      route.symbolize_keys!
+      if route[:id].present?
+        single_name = data.keys.first[0...-1]
+        route.symbolize_keys!.update("#{single_name}_id": route[:id]).except!(:id)
+      else
+        route
       end
-    elsif data.key?('node_pairs')
-      data['node_pairs'].each do |node_pair|
-        results << node_pair
-        # NodePair.create(node_pair)
-      end
+      results << route
     end
-    print NodePair.all.count
+
     results
   end
 end
