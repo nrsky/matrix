@@ -11,7 +11,6 @@ class RoutesController < ApplicationController
       result  = file_helper.process_zip(upload_params)
       render json: result, status: :created
     rescue Exception => e
-      print e.message
       render json: { :errors => [e.message] }, status: 422
     end
   end

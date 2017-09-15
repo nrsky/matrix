@@ -1,6 +1,7 @@
 class FileHelper
   TMP_FOLDER = File.join(Rails.root, 'tmp')
 
+  #TODO refactor upload params
   def download_zip(upload_params)
     source     = upload_params[:source]
     passphrase = upload_params[:passphrase]
@@ -18,8 +19,13 @@ class FileHelper
     #TODO get rid of additional zip_file
     #TODO put parsed_results to result
     Zip::File.open("#{TMP_FOLDER}/#{upload_params[:source]}") do |zip_file|
+
+      #TODO open to the same folder, rewrite
       zip_file.each { |f|
-         process_files_inside_zip(f, parsed_results)
+        f_path=File.join(Rails.root, 'tmp1', f.name)
+        FileUtils.mkdir_p(File.dirname(f_path))
+        zip_file.extract(f, f_path) unless File.exist?(f_path)
+        process_files_inside_zip(f_path, parsed_results)
       }
     end
 
@@ -29,11 +35,7 @@ class FileHelper
 
   private
 
-  def process_files_inside_zip(f, parsed_results)
-    f_path=File.join(Rails.root, 'tmp1', f.name)
-    FileUtils.mkdir_p(File.dirname(f_path))
-    zip_file.extract(f, f_path) unless File.exist?(f_path)
-
+  def process_files_inside_zip(f_path, parsed_results)
     #TODO check Parser parent class
     Dir.glob("#{f_path}/*") do |file|
       extention = File.extname(file).strip.downcase[1..-1]
