@@ -1,10 +1,8 @@
 require 'vcr'
 
 When(/^I make "(.*?)" request to "(.*?)":$/) do |method, url, raw_data|
-  # VCR.use_cassette("loopholes", :record => :none) do
     params = JSON.parse(raw_data)
     self.send(method.downcase, eval('"' + url + '"'), params, {'CONTENT_TYPE' => 'application/json'})
-  # end
 end
 
 When(/^I make "(.*?)" request to "(.*?)" with file "(.*?)"$/) do |method, url, file_name|

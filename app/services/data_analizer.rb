@@ -1,11 +1,11 @@
 class DataAnalizer
-  def get_data(data)
+  def match_data(data)
     if data.present?
       while(can_be_merged?(data)) do
         get_keys(data)
       end
     end
-    data
+    data.count == 1 ?  data[0] : data
   end
 
   private
