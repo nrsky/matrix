@@ -9,7 +9,6 @@ class RoutesController < ApplicationController
       file_helper = FileHelper.new
       file_helper.download_zip(download_params)
       result  = file_helper.process_zip(download_params)
-
       render json: {count: result.count}, status: :ok
     rescue Exception => e
       render json: { :errors => [e.message] }, status: 422

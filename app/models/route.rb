@@ -19,8 +19,7 @@ class Route
   validates_inclusion_of :start_node, in: TYPES, allow_nil: true
   validates_inclusion_of :end_node, in: TYPES, allow_nil: true
   validates_length_of :passphrase, minimum: 23, maximum: 23, allow_nil: true
-  # start_time	ISO 8601 UTC time	YYYY-MM-DDThh:mm:ss
-  # end_time	ISO 8601 UTC time	YYYY-MM-DDThh:mm:ss
+  validates_presence_of :start_time, :end_time
 
   scope :with_source, ->(source){ where(source: source) }
 end

@@ -5,6 +5,7 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+gem 'active_model_serializers'
 gem 'mongoid'
 gem 'mongoid_rails_migrations'
 gem 'bson_ext'

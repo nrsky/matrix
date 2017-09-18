@@ -28,4 +28,6 @@ RSpec.describe Route, type: :model do
       expect(route.save!).to be_truthy
     end
   end
+
+  #TODO test scope
 end

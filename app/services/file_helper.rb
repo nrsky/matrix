@@ -21,7 +21,7 @@ class FileHelper
 
     unzip_file(path, destination)
     parsed_results = process_files_inside_zip("#{destination}/#{upload_params[:source]}")
-    persist_result(DataAnalizer.new.join_data(parsed_results)&.reject(&:nil?))
+    persist_result(DataAnalizer.new.join_data(parsed_results)&.reject(&:nil?), upload_params)
   end
 
   private
@@ -54,7 +54,11 @@ class FileHelper
     parsed_results
   end
 
-  def persist_result(result_array)
-    result_array.map{|route| Route.create(route) if route[:route_id]}
+  def persist_result(result_array, upload_params)
+    result_array.map{ |route|
+      Route.create(route.
+        update(source: upload_params[:source]).
+        update(passphrase: upload_params[:passphrase])) if route[:route_id]
+    }
   end
 end
