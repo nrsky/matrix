@@ -21,4 +21,6 @@ class Route
   validates_length_of :passphrase, minimum: 23, maximum: 23, allow_nil: true
   # start_time	ISO 8601 UTC time	YYYY-MM-DDThh:mm:ss
   # end_time	ISO 8601 UTC time	YYYY-MM-DDThh:mm:ss
+
+  scope :with_source, ->(source){ where(source: source) }
 end

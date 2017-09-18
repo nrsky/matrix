@@ -1,3 +1,4 @@
+require 'zip/zip'
 class FileHelper
   TMP_FOLDER = File.join(Rails.root, 'tmp')
 
@@ -13,30 +14,34 @@ class FileHelper
     end
   end
 
+  #TODO check if data is wrong and files don't match with each other, raise custom exceptions
   def process_zip(upload_params)
-    parsed_results = []
+    path = "#{TMP_FOLDER}/#{upload_params[:source]}"
+    destination = "#{TMP_FOLDER}/fixtures"
 
-    #TODO get rid of additional zip_file
-    #TODO put parsed_results to result
-    Zip::File.open("#{TMP_FOLDER}/#{upload_params[:source]}") do |zip_file|
-
-      #TODO open to the same folder, rewrite
-      zip_file.each { |f|
-        f_path=File.join(Rails.root, 'tmp1', f.name)
-        FileUtils.mkdir_p(File.dirname(f_path))
-        zip_file.extract(f, f_path) unless File.exist?(f_path)
-        process_files_inside_zip(f_path, parsed_results)
-      }
-    end
-
-    #TODO check if data is wrong and files don't match with each other
-    persist_result(DataAnalizer.new.match_data(parsed_results))
+    unzip_file(path, destination)
+    parsed_results = process_files_inside_zip("#{destination}/#{upload_params[:source]}")
+    persist_result(DataAnalizer.new.join_data(parsed_results)&.reject(&:nil?))
   end
 
   private
 
-  def process_files_inside_zip(f_path, parsed_results)
-    #TODO check Parser parent class
+  def unzip_file(file, destination)
+    if File.exist?(destination) then
+      FileUtils.rm_rf destination
+    end
+    Zip::ZipFile.open(file) { |zip_file|
+      zip_file.each { |f|
+        f_path=File.join(destination, f.name)
+        FileUtils.mkdir_p(File.dirname(f_path))
+        zip_file.extract(f, f_path)
+      }
+    }
+  end
+
+  def process_files_inside_zip(f_path)
+    parsed_results = []
+
     Dir.glob("#{f_path}/*") do |file|
       extention = File.extname(file).strip.downcase[1..-1]
       if extention == 'json'
@@ -45,6 +50,8 @@ class FileHelper
         parsed_results << Csv_Parser.parse_csv(file)&.reject(&:empty?)
       end
     end
+
+    parsed_results
   end
 
   def persist_result(result_array)

@@ -5,9 +5,9 @@ When(/^I make "(.*?)" request to "(.*?)":$/) do |method, url, raw_data|
     self.send(method.downcase, eval('"' + url + '"'), params, {'CONTENT_TYPE' => 'application/json'})
 end
 
-When(/^I make "(.*?)" request to "(.*?)" with file "(.*?)"$/) do |method, url, file_name|
-  file = uploaded_fixture_file(file_name)
-  send_request method, url, {file: file}
+When(/^I make send "(.*?)" request to "(.*?)":$/) do |method, url, raw_data|
+  params = JSON.parse(raw_data)
+  self.send(method.downcase, url, params.to_json, {'CONTENT_TYPE' => 'application/json'})
 end
 
 When(/^I make a "(.*?)" request to "([^"]*?)"$/) do |method, url|
@@ -34,7 +34,4 @@ def send_request(request_type, path, params={})
   request path, method: request_type.downcase.to_sym, params: params
 end
 
-def uploaded_fixture_file(fixture_name, content_type = "text/plain")
-  Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/", fixture_name), content_type)
-end
 
